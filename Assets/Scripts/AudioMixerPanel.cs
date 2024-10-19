@@ -2,51 +2,27 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Slider))]
 public class AudioMixerPanel : MonoBehaviour
 {
-    private const string MasterVolume = "MasterVolume";
-    private const string MusicVolume = "MusicVolume";
-    private const string EffectsVolume = "EffectsVolume";
-
     [SerializeField] private AudioMixerGroup _mixer;
     [SerializeField] private Toggle _checkbox;
-    [SerializeField] private Slider _masterSlider;
-    [SerializeField] private Slider _backgroundSlider;
-    [SerializeField] private Slider _effectSlider;
 
+    private Slider _slider;
 
-    public void ToogleMusic()
+    private string _volumeParametr;
+
+    private void Awake()
     {
-        float maxVolume = 0f;
-        float minVolume = -80f;
+        _slider = GetComponent<Slider>();
+        _volumeParametr = _mixer.name;
+    }
 
+    public void ChangeVolume()
+    {
         if (_checkbox.isOn)
         {
-            _mixer.audioMixer.SetFloat(MasterVolume, maxVolume);
+            _mixer.audioMixer.SetFloat(_volumeParametr, Mathf.Log10(_slider.value) * 20);
         }
-        else
-        {
-            _mixer.audioMixer.SetFloat(MasterVolume, minVolume);
-        }
-    }
-
-    public void ChangeMasterVolume()
-    {
-        ChangeVolume(_masterSlider.value, MasterVolume);
-    }
-
-    public void ChangeBackgroundMusicVolume()
-    {
-        ChangeVolume(_backgroundSlider.value, MusicVolume);
-    }
-
-    public void ChangeSoundEffectsVolume()
-    {
-        ChangeVolume(_effectSlider.value, EffectsVolume);
-    }
-
-    private void ChangeVolume(float volume, string volumeParametr)
-    {
-        _mixer.audioMixer.SetFloat(volumeParametr, Mathf.Log10(volume) * 20);
     }
 }
